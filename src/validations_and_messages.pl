@@ -2,7 +2,7 @@ choose_game_mode(GameMode) :-
     repeat,
     write('Choose gamemode: '), read(GameMode),
 
-    ((GameMode < 1; GameMode > 3) ->
+    ((GameMode < 1; GameMode > 4) ->
     write('input error'), nl, fail;
     true).
 

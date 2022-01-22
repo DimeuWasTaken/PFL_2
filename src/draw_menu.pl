@@ -11,11 +11,23 @@ draw_logo :-
 
 draw_options :-
     nl,
-    write(' ----------------------------------------------------------------------------------- '), nl,
-    write('|                         |                           |                             |'), nl, 
-    write('|  1 - Player Vs. Player  |  2 - Player Vs. Computer  |  3 - Computer Vs. Computer  |'), nl, 
-    write('|                         |                           |                             |'), nl,
-    write(' ----------------------------------------------------------------------------------- '), nl, nl.
+    write(' ----------------------------- '), nl,
+    write('|                             |'), nl, 
+    write('|    1 - Player Vs. Player    |'), nl, 
+    write('|                             |'), nl,
+    write('|-----------------------------|'), nl,
+    write('|                             |'), nl, 
+    write('|   2 - Player Vs. Computer   |'), nl, 
+    write('|                             |'), nl,
+    write('|-----------------------------|'), nl,
+    write('|                             |'), nl, 
+    write('|   3 - Computer Vs. Player   |'), nl, 
+    write('|                             |'), nl,
+    write('|-----------------------------|'), nl,
+    write('|                             |'), nl, 
+    write('|  4 - Computer Vs. Computer  |'), nl, 
+    write('|                             |'), nl,
+    write(' ----------------------------- '), nl, nl.
 
 display_state([]) :- nl.
 display_state([X|N]) :- write(X), nl, display_state(N).

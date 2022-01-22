@@ -27,3 +27,48 @@ replace2D([Head | Tail], X, Y, Value, [Head | Rest]) :-
     Y > 0,
     Y1 is Y - 1,
     replace2D(Tail, X, Y1, Value, Rest).
+
+/*get_pieces_in_board(Array, X, Y, Length, Value, PositionsArray)*/
+
+get_pieces_in_board(Array, _, Length, Length, Value, PositionsArray).
+get_pieces_in_board(Array, Length, Y, Length, Value, PositionsArray):-
+    Y1 is Y + 1,
+    get_pieces_in_board(Array, 0, Y1, Length, Value, PositionsArray).
+
+get_pieces_in_board(Array, X, Y, Length, Value, PositionsArray) :-
+    Y < Length,
+    X < Length,
+    check_pos(Array, Y, Intermediate), check_pos(Intermediate, X, (J, _)),
+    X1 is X + 1,
+    (Value == J ->
+        append(NewPositionsArray, [(X, Y)], PositionsArray), get_pieces_in_board(Array, X1, Y, Length, Value, NewPositionsArray);
+        get_pieces_in_board(Array, X1, Y, Length, Value, PositionsArray)
+    ).
+
+
+/*
+build_line(Length, Length, Line, _).
+build_line(X, Length, Line, NewLine) :-
+    X < Length,
+    X1 is X + 1,
+    append(Line, [(0, 0)], NewLine),
+    write(Line), write(', '), write(NewLine), nl,
+    build_line(X1, Length, NewLine, _),
+    write(Line), write(', '), write(NewLine), nl.
+
+
+build_board(Length, Length, Board, _).
+build_board(Y, Length, Board, BoardLine) :-
+    Y1 is Y + 1,
+    build_line(0, Length, Line),
+    append(B, Line, Board),
+    build_board(Y1, Length, B, _).
+
+
+test :-
+    build_board(0, 2, Board, _),
+    write(Board).
+
+test2 :-
+    build_line(0, 5, Line, _), write(Line).
+*/
