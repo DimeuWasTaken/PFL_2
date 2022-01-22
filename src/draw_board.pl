@@ -1,11 +1,11 @@
-:- consult('draw_main_menu.pl').
+:- consult('draw_menu.pl').
 
 draw_cell(0) :- write('_').
 draw_cell(1) :- write('o').
-draw_cell(-1) :- write('x').
+draw_cell(2) :- write('x').
 
 draw_x([]).
-draw_x([X | N]) :- write(' '), draw_cell(X), write(' '), draw_x(N).
+draw_x([(X, _) | N]) :- write(' '), draw_cell(X), write(' '), draw_x(N).
 
 draw_y([], _)  :- 
     nl, write('        ----------------------------'), 
@@ -20,12 +20,10 @@ draw_y([Y | N], Line) :-
     write(Line), write(' | '), draw_x(Y), 
     Line2 is Line + 1, draw_y(N, Line2).
 
-display_game(GameState) :- FirstLine = 0,
-              draw_y(GameState, FirstLine), nl.
+draw_player(CurrentPlayer) :-
+    nl, write('.-----------.'),
+    nl, write('|  player '), write(CurrentPlayer), write(' |'),
+    nl, write(' -----------'), nl.
 
-match([H|_],0,H) :-
-    !.
-match([_|T],N,H) :-
-    N > 0, %add for loop prevention
-    N1 is N-1,
-    match(T,N1,H).
+display_game(GameState) :- FirstLine = 0,
+              nl, draw_y(GameState, FirstLine), nl.

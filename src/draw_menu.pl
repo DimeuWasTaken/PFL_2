@@ -1,4 +1,5 @@
-draw_main_menu :-
+draw_logo :-
+    nl,
     write('  _____                                             _              '), nl,
     write(' |  __ \\                                           | |             '), nl,
     write(' | |__) | ___  _ __   _ __    __ _   __ _  _ __  __| |  ___  _ __  '), nl,
@@ -7,3 +8,14 @@ draw_main_menu :-
     write(' |_|  \\_\\\\___||_| |_|| .__/  \\__,_| \\__,_||_|   \\__,_| \\___||_| |_|'), nl,
     write('                     | |                                           '), nl,
     write('                     |_|                                           '), nl.
+
+draw_options :-
+    nl,
+    write(' ----------------------------------------------------------------------------------- '), nl,
+    write('|                         |                           |                             |'), nl, 
+    write('|  1 - Player Vs. Player  |  2 - Player Vs. Computer  |  3 - Computer Vs. Computer  |'), nl, 
+    write('|                         |                           |                             |'), nl,
+    write(' ----------------------------------------------------------------------------------- '), nl, nl.
+
+display_state([]) :- nl.
+display_state([X|N]) :- write(X), nl, display_state(N).

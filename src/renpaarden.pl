@@ -1,45 +1,188 @@
-:- consult('draw_main_menu.pl').
+:- use_module(library(lists)).
+
+:- consult('draw_menu.pl').
 :- consult('draw_board.pl').
+:- consult('validations_and_messages.pl').
+:- consult('aux_functions.pl').
 
-play :- Board = [
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1], 
-    [0, 0, 0, 0, 0, 0, 0, 0, 0], 
-    [0, 0, 0, 0, 0, 0, 0, 0, 0], 
-    [0, 0, 0, 0, 0, 0, 0, 0, 0], 
-    [0, 0, 0, 0, 0, 0, 0, 0, 0], 
-    [0, 0, 0, 0, 0, 0, 0, 0, 0], 
-    [1, 1, 1, 1, 1, 1, 1, 1, 1], 
-    [1, 1, 1, 1, 1, 1, 1, 1, 1]],
-    draw_main_menu, game_cycle(Board).
-    
-game_cycle(Board) :-
-    Current_player = 1, 
-    
-    display_game(Board),
-    move(Board, Current_player).
+/* GameState = [
+    [(2, 0), (2, 0), (2, 0), (2, 0), (2, 0), (2, 0), (2, 0), (2, 0), (2, 0)], 
+    [(2, 0), (2, 0), (2, 0), (2, 0), (2, 0), (2, 0), (2, 0), (2, 0), (2, 0)], 
+    [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)], 
+    [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)], 
+    [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)], 
+    [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)], 
+    [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)],
+    [(1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0)], 
+    [(1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0)]], */
 
-move(GameState, Current_player) :- 
+play :- GameState = [
+    [(0, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0)],
+    [(1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0)], 
+    [(0, 0), (1, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)], 
+    [(2, 0), (2, 0), (2, 0), (2, 0), (2, 0), (2, 0), (2, 0), (2, 0), (2, 0)], 
+    [(2, 0), (2, 0), (2, 0), (2, 0), (2, 0), (2, 0), (2, 0), (2, 0), (2, 0)], 
+    [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)], 
+    [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)], 
+    [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)], 
+    [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]], 
+    %draw_logo, 
+    %draw_options, choose_game_mode(GameMode),      /* todo - implement player vs computer */
+    %choose_board_size(BoardSize),                  /* todo - build board with variable size */
+    game_cycle(GameState, 2, (X, Y), RepeatTurn).
+
+
+    
+game_cycle(GameState, CurrentPlayer, (X, Y), RepeatTurn) :-
+    display_game(GameState),
+    %display_state(GameState),
+    game_over(GameState, Winner),
+
+    ((Winner == 1; Winner == 2) ->
+    announce_winner(Winner), play_again;
+    draw_player(CurrentPlayer), 
+    turn(GameState, (X, Y), CurrentPlayer, RepeatTurn)).
+
+
+
+turn(GameState, (X, Y), 1, RepeatTurn) :- 
+    check_valid_position(GameState, (X, Y), (X1, Y1), 1, RepeatTurn), nl, nl,
+    move(GameState, (X, Y), (X1, Y1), NewGameState, 1, RepeatTurn), 
+    (RepeatTurn == 1 ->
+    game_cycle(NewGameState, 1, (X1, Y1), 1);
+    game_cycle(NewGameState, 2, _, 0)).
+
+turn(GameState, (X, Y), 2, RepeatTurn) :- 
+    check_valid_position(GameState, (X, Y), (X1, Y1), 2, RepeatTurn), nl, nl,
+    move(GameState, (X, Y), (X1, Y1), NewGameState, 2, RepeatTurn),
+    (RepeatTurn == 1 ->
+    game_cycle(NewGameState, 2, (X1, Y1), 1);
+    game_cycle(NewGameState, 1, _, 0)).
+
+
+
+
+
+check_valid_position(GameState, (X, Y), (X1, Y1), Player, RepeatTurn) :-
+
     repeat,
-    write('choose X to play: (0 - 8)'), nl,
-    read(Input_x),
-    write('choose Y to play: (0 - 8)'), nl,
-    read(Input_y),
+    (RepeatTurn == 1 ->
+    true;
+    get_input(X, Y), validate_input(GameState, (X, Y), Player)),
+    
+    valid_moves(GameState, X, Y, Player, ListOfMoves, ArrayLength),
 
-    ((Input_x > 8 ; Input_x < 0 ; Input_y > 8 ; Input_y < 0) ->
+    ((ArrayLength > 0) ->
+    true;
+    write('no possible move from that cell'), RepeatTurn = 0, nl, fail),
+
+    write('choose index of move to use:'), nl, read(ChosenIndex),
+
+    (ChosenIndex =< ArrayLength, ChosenIndex >= 0 ->
+    check_pos(ListOfMoves, ChosenIndex, (X1, Y1)), announce_move((X, Y), (X1, Y1));
+    write('invalid index'), nl, fail).
+
+
+
+
+
+validate_input(GameState, (X, Y), Player):-
+    ((X > 8 ; X < 0 ; Y > 8 ; Y < 0) ->
     write('input error'), nl, fail;
     true),
 
-    match(GameState, Input_y, I), match(I, Input_x, J),
+    check_pos(GameState, Y, I), check_pos(I, X, (J, _)),
 
-    (((Current_player == 1, J == 1); (Current_player == 2, J == -1))->
-    !;
-    write('invalid cell, not your piece'), nl, fail),
+    (((Player == 1, J == 1); (Player == 2, J == 2))->
+    true;
+    write('invalid cell, not your piece'), nl, fail).
+
+
+
+
+
+valid_moves(GameState, X, Y, Player, ListOfMoves, ArrayLength) :-
+    X1 is X - 2, X2 is X - 1, X3 is X + 1, X4 is X + 2,
+    Y1 is Y - 2, Y2 is Y - 1, Y3 is Y + 1, Y4 is Y + 2,
+
+    PossibleMoves = [(X3, Y1), (X4, Y2), (X4, Y3), (X3, Y4), (X2, Y4), (X1, Y3), (X1, Y2), (X2, Y1)],
+
+    validate_moves(GameState, Player, PossibleMoves, ListOfMoves),
+    length(ListOfMoves, ArrayLength),
+    write('Valid moves: '), 
+    (ListOfMoves == [] ->
+    write('[]');
+    write(ListOfMoves)),
+    nl, !.
+
+
+
+
+
+validate_move(GameState, Player, (X, Y)) :- 
+    X =< 8,
+    X >= 0,
+    Y =< 8,
+    Y >= 0,
+    check_pos(GameState, Y, I), check_pos(I, X, (J, _)),
+    \+ ((Player == 1, J == 1); (Player == 2, J == 2)).
+
+
+
+
+
+validate_moves(_, _, [], ValidMoves).
+validate_moves(GameState, Player, [(X, Y) | Tail], ValidMoves) :-
+
+    (validate_move(GameState, Player, (X, Y)) ->
+    append(V, [(X, Y)], ValidMoves), validate_moves(GameState, Player, Tail, V);
+    validate_moves(GameState, Player, Tail, ValidMoves)).
+
+
+
+
+
+move(GameState, (X, Y), (X1, Y1), NewGameState, Value, RepeatTurn) :-
+    check_pos(GameState, Y, I), check_pos(I, X, (OldValue, Repeated)),
+
+    (Repeated == 1 ->
+        (OldValue == 1 ->
+        replace2D(GameState, X, Y, (2, 0), Intermediate);
+        replace2D(GameState, X, Y, (1, 0), Intermediate));
+    replace2D(GameState, X, Y, (0, 0), Intermediate)),
+
+    check_pos(GameState, Y1, I1), check_pos(I1, X1, (J, _)),
     
-    write('position '), write(Input_x), write(':'), write(Input_y), write(' - '), draw_cell(J).
+    write(X1), write(', '), write(Y1), write(', '), write(Value), write(', '), write(J), write(', '),
+    (((Value == 1, J == 2);(Value == 2, J == 1)) ->
+    RepeatTurn = 1;
+    RepeatTurn = 0),
+    write(RepeatTurn), nl, nl,
+    replace2D(Intermediate, X1, Y1, (Value, RepeatTurn), NewGameState).
 
-test(I) :-
-    Y = 5,
-    Z = 1,
-    I is Y + Z,
-    write(I), nl.
+
+
+
+
+game_over([
+    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1], 
+    _, 
+    _, 
+    _, 
+    _, 
+    _, 
+    _, 
+    _], Winner) :- Winner = 1.
+
+game_over([_,
+    _, 
+    _, 
+    _, 
+    _, 
+    _, 
+    _, 
+    [2, 2, 2, 2, 2, 2, 2, 2, 2], 
+    [2, 2, 2, 2, 2, 2, 2, 2, 2]], Winner) :- Winner = 2.
+
+game_over(_, _).
