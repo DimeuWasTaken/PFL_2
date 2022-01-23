@@ -1,3 +1,5 @@
+/* draw_logo */
+/* desenha o logotipo do jogo recorrendo a ASCII art. */
 draw_logo :-
     nl,
     write('  _____                                             _              '), nl,
@@ -9,6 +11,9 @@ draw_logo :-
     write('                     | |                                           '), nl,
     write('                     |_|                                           '), nl.
 
+
+/* draw_options */
+/* desenha os tipos de jogo disponíveis. */
 draw_options :-
     nl,
     write(' ----------------------------- '), nl,
@@ -28,6 +33,3 @@ draw_options :-
     write('|  4 - Computer Vs. Computer  |'), nl, 
     write('|                             |'), nl,
     write(' ----------------------------- '), nl, nl.
-
-display_state([]) :- nl.
-display_state([X|N]) :- write(X), nl, display_state(N).
